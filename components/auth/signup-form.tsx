@@ -1,0 +1,290 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Cloud, Mail, Lock, User, ArrowRight, Check } from "lucide-react";
+
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+    </svg>
+  );
+}
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
+
+const passwordRequirements = [
+  { regex: /.{8,}/, label: "At least 8 characters" },
+  { regex: /[A-Z]/, label: "One uppercase letter" },
+  { regex: /[0-9]/, label: "One number" },
+];
+
+export function SignupForm() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const router = useRouter();
+
+  const passwordStrength = passwordRequirements.filter((r) => r.regex.test(password)).length;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agreed) {
+      toast.error("Please agree to the terms and conditions");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Account created! Check your email to verify.");
+      router.push("/dashboard");
+    } catch {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  };
+
+  const handleGithubSignup = async () => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left: Illustration */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="hidden lg:flex flex-1 relative bg-gradient-to-br from-indigo-600 via-blue-700 to-blue-800 overflow-hidden"
+      >
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/3 left-1/4 w-60 h-60 bg-blue-300/20 rounded-full blur-3xl animate-pulse delay-700" />
+
+        <div className="relative flex flex-col justify-center items-center p-16 text-white w-full">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="w-24 h-24 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-8"
+          >
+            <Cloud className="w-12 h-12 text-white" />
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <h2 className="text-3xl font-bold mb-4 text-center">Start your free account</h2>
+            <p className="text-blue-100 text-center mb-10 max-w-xs leading-relaxed">
+              Join 12,000+ teams who trust Soft Drive to store and share their most important files.
+            </p>
+          </motion.div>
+
+          <div className="space-y-4 w-full max-w-xs">
+            {[
+              "30 GB free storage",
+              "Secure file sharing",
+              "Video streaming",
+              "Mobile & desktop apps",
+              "No credit card required",
+            ].map((benefit, i) => (
+              <motion.div
+                key={benefit}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.08 }}
+                className="flex items-center gap-3"
+              >
+                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+                <span className="text-blue-100 text-sm">{benefit}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right: Form */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 radial-gradient-bg opacity-60" />
+
+        <div className="relative w-full max-w-md">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10"
+          >
+            <Link href="/" className="flex items-center gap-2.5 font-bold text-xl">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-glow">
+                <Cloud className="w-5 h-5 text-white" />
+              </div>
+              Soft Drive
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h1 className="text-3xl font-bold mb-2">Create your account</h1>
+            <p className="text-muted-foreground mb-8">Free forever. No credit card required.</p>
+
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <Button type="button" variant="outline" className="h-11 gap-2 font-medium" onClick={handleGoogleSignup}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                Google
+              </Button>
+              <Button type="button" variant="outline" className="h-11 gap-2 font-medium" onClick={handleGithubSignup}>
+                <GithubIcon className="w-4 h-4" />
+                GitHub
+              </Button>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-background px-3 text-muted-foreground">or continue with email</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="Full name"
+                type="text"
+                placeholder="John Doe"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                icon={<User className="w-4 h-4" />}
+                required
+                autoComplete="name"
+              />
+
+              <Input
+                label="Email address"
+                type="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                icon={<Mail className="w-4 h-4" />}
+                required
+                autoComplete="email"
+              />
+
+              <div>
+                <Input
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a strong password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  icon={<Lock className="w-4 h-4" />}
+                  iconRight={
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="hover:text-foreground transition-colors">
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  }
+                  required
+                  autoComplete="new-password"
+                />
+                {/* Password strength */}
+                {password && (
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex gap-1">
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                            i < passwordStrength
+                              ? passwordStrength === 1 ? "bg-red-500" : passwordStrength === 2 ? "bg-yellow-500" : "bg-green-500"
+                              : "bg-muted"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <div className="space-y-1">
+                      {passwordRequirements.map((req) => (
+                        <p key={req.label} className={`text-xs flex items-center gap-1.5 ${req.regex.test(password) ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+                          <Check className={`w-3 h-3 ${req.regex.test(password) ? "opacity-100" : "opacity-30"}`} />
+                          {req.label}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 rounded border-input accent-primary shrink-0"
+                />
+                <span className="text-sm text-muted-foreground">
+                  I agree to the{" "}
+                  <Link href="#" className="text-primary hover:underline">Terms of Service</Link>
+                  {" "}and{" "}
+                  <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>
+                </span>
+              </label>
+
+              <Button type="submit" variant="premium" size="lg" className="w-full gap-2" loading={loading}>
+                Create Account
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </form>
+
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
