@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const maxDuration = 300;
 
@@ -35,9 +36,10 @@ export async function POST(request: Request) {
     const ext = file.name.split(".").pop();
     const storagePath = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
 
-    // Upload to Supabase Storage
+    // Use admin client to bypass storage bucket policies
+    const admin = createAdminClient();
     const bytes = await file.arrayBuffer();
-    const { error: storageError } = await supabase.storage
+    const { error: storageError } = await admin.storage
       .from("files")
       .upload(storagePath, bytes, {
         contentType: file.type || "application/octet-stream",
@@ -47,8 +49,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: storageError.message }, { status: 500 });
     }
 
-    // Save file record
-    const { data: fileRecord, error: dbError } = await supabase
+    const { data: fileRecord, error: dbError } = await admin
       .from("files")
       .insert({
         user_id: user.id,
@@ -63,18 +64,16 @@ export async function POST(request: Request) {
       .single();
 
     if (dbError) {
-      await supabase.storage.from("files").remove([storagePath]);
+      await admin.storage.from("files").remove([storagePath]);
       return NextResponse.json({ error: dbError.message }, { status: 500 });
     }
 
-    // Update storage usage
-    await supabase.rpc("increment_storage", {
+    await admin.rpc("increment_storage", {
       user_id_input: user.id,
       size_bytes: file.size,
     });
 
-    // Log activity
-    await supabase.from("activity_logs").insert({
+    await admin.from("activity_logs").insert({
       user_id: user.id,
       file_id: fileRecord.id,
       action: "upload",
@@ -83,6 +82,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ file: fileRecord });
   } catch (error) {
+    console.error("Upload error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

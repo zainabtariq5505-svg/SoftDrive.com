@@ -5,17 +5,16 @@ import { motion } from "framer-motion";
 import { FolderPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
 import type { Folder } from "@/types";
 
 interface CreateFolderModalProps {
   parentId: string | null;
-  userId: string;
+  userId?: string;
   onClose: () => void;
   onSuccess: (folder: Folder) => void;
 }
 
-export function CreateFolderModal({ parentId, userId, onClose, onSuccess }: CreateFolderModalProps) {
+export function CreateFolderModal({ parentId, onClose, onSuccess }: CreateFolderModalProps) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,17 +30,16 @@ export function CreateFolderModal({ parentId, userId, onClose, onSuccess }: Crea
     setError("");
 
     try {
-      const supabase = createClient();
-      const { data, error: dbError } = await supabase
-        .from("folders")
-        .insert({ user_id: userId, parent_id: parentId, name: name.trim() })
-        .select()
-        .single();
-
-      if (dbError) throw dbError;
-      onSuccess(data as Folder);
-    } catch {
-      setError("Failed to create folder. Please try again.");
+      const res = await fetch("/api/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), parentId }),
+      });
+      const data = await res.json() as { folder?: Folder; error?: string };
+      if (!res.ok) throw new Error(data.error ?? "Failed to create folder");
+      onSuccess(data.folder!);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create folder. Please try again.");
     } finally {
       setLoading(false);
     }

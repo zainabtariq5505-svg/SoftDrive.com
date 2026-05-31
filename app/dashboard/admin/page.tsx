@@ -11,7 +11,9 @@ export default async function AdminPage() {
   if (!user) return null;
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-  if (profile?.role !== "admin") redirect("/dashboard");
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
+  const isAdmin = profile?.role === "admin" || adminEmails.includes(user.email ?? "");
+  if (!isAdmin) redirect("/dashboard");
 
   const [
     { count: totalUsers },
