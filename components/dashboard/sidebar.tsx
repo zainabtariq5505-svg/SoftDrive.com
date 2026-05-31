@@ -43,9 +43,10 @@ interface SidebarProps {
   onToggle: () => void;
   profile: Profile | null;
   user: User;
+  isAdmin?: boolean;
 }
 
-export function Sidebar({ collapsed, onToggle, profile, user }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, profile, user, isAdmin = false }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { openUpload } = useUpload();
@@ -53,7 +54,6 @@ export function Sidebar({ collapsed, onToggle, profile, user }: SidebarProps) {
   const storageUsed = profile?.storage_used ?? 0;
   const storageLimit = profile?.storage_limit ?? 32212254720; // 30 GB
   const storagePercent = Math.min((storageUsed / storageLimit) * 100, 100);
-  const isAdmin = profile?.role === "admin";
 
   const initials = profile?.full_name
     ?.split(" ")

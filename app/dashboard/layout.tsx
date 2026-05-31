@@ -16,8 +16,11 @@ export default async function Layout({ children }: { children: React.ReactNode }
     .eq("id", user.id)
     .single();
 
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
+  const isAdmin = profile?.role === "admin" || adminEmails.includes(user.email ?? "");
+
   return (
-    <DashboardLayout user={user} profile={profile}>
+    <DashboardLayout user={user} profile={profile} isAdmin={isAdmin}>
       {children}
     </DashboardLayout>
   );

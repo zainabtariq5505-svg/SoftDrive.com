@@ -10,10 +10,11 @@ import { UploadProvider } from "@/components/providers/upload-provider";
 interface DashboardLayoutProps {
   user: User;
   profile: Profile | null;
+  isAdmin?: boolean;
   children: React.ReactNode;
 }
 
-export function DashboardLayout({ user, profile, children }: DashboardLayoutProps) {
+export function DashboardLayout({ user, profile, isAdmin, children }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
@@ -24,6 +25,7 @@ export function DashboardLayout({ user, profile, children }: DashboardLayoutProp
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           profile={profile}
           user={user}
+          isAdmin={isAdmin}
         />
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <TopBar
