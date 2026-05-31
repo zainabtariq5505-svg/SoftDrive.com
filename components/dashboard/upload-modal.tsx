@@ -15,12 +15,10 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { createClient } from "@/lib/supabase/client";
 import { formatFileSize } from "@/types";
 import type { UploadTask } from "@/types";
 import { cn } from "@/lib/utils";
 
-const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
 const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB per file
 
 interface UploadModalProps {
@@ -67,65 +65,36 @@ export function UploadModal({ folderId, onClose, onSuccess }: UploadModalProps) 
   });
 
   const uploadFile = async (task: UploadTask) => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+    updateTask(task.id, { status: "uploading", progress: 5 });
 
-    updateTask(task.id, { status: "uploading", progress: 0 });
+    let fakeProgress = 5;
+    const progressInterval = setInterval(() => {
+      fakeProgress = Math.min(fakeProgress + 4, 85);
+      updateTask(task.id, { progress: fakeProgress });
+    }, 400);
 
-    const ext = task.file.name.split(".").pop();
-    const storagePath = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+    try {
+      const formData = new FormData();
+      formData.append("file", task.file);
+      if (task.folderId) formData.append("folderId", task.folderId);
 
-    // Chunked upload for files > 5MB
-    if (task.file.size > CHUNK_SIZE) {
-      const totalChunks = Math.ceil(task.file.size / CHUNK_SIZE);
-      let uploaded = 0;
-
-      for (let i = 0; i < totalChunks; i++) {
-        const chunk = task.file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-        const { error } = await supabase.storage
-          .from("files")
-          .upload(storagePath, chunk, {
-            upsert: i === 0 ? false : true,
-            contentType: task.file.type,
-          });
-
-        if (error && i === 0) throw error;
-
-        uploaded += chunk.size;
-        const progress = Math.round((uploaded / task.file.size) * 90);
-        updateTask(task.id, { progress });
-      }
-    } else {
-      const { error } = await supabase.storage.from("files").upload(storagePath, task.file, {
-        contentType: task.file.type,
-        upsert: false,
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       });
-      if (error) throw error;
+
+      clearInterval(progressInterval);
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? "Upload failed");
+      }
+
+      updateTask(task.id, { status: "success", progress: 100 });
+    } catch (err) {
+      clearInterval(progressInterval);
+      throw err;
     }
-
-    updateTask(task.id, { progress: 95 });
-
-    // Save to database
-    const { error: dbError } = await supabase.from("files").insert({
-      user_id: user.id,
-      folder_id: folderId ?? null,
-      name: task.file.name,
-      original_name: task.file.name,
-      size: task.file.size,
-      mime_type: task.file.type || "application/octet-stream",
-      storage_path: storagePath,
-    });
-
-    if (dbError) throw dbError;
-
-    // Update storage usage
-    await supabase.rpc("increment_storage", {
-      user_id_input: user.id,
-      size_bytes: task.file.size,
-    });
-
-    updateTask(task.id, { status: "success", progress: 100 });
   };
 
   const startUpload = async () => {
