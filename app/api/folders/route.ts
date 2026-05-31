@@ -18,6 +18,18 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminClient();
+
+    // Ensure profile row exists (trigger may not have fired on first signup)
+    await admin.from("profiles").upsert(
+      {
+        id: user.id,
+        email: user.email!,
+        full_name: user.user_metadata?.full_name as string ?? user.email!.split("@")[0],
+        avatar_url: user.user_metadata?.avatar_url as string ?? null,
+      },
+      { onConflict: "id", ignoreDuplicates: true }
+    );
+
     const { data, error } = await admin
       .from("folders")
       .insert({ user_id: user.id, parent_id: parentId ?? null, name: name.trim() })

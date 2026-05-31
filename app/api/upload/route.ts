@@ -38,6 +38,17 @@ export async function POST(request: Request) {
 
     // Use admin client to bypass storage bucket policies
     const admin = createAdminClient();
+
+    // Ensure profile row exists (trigger may not have fired on first signup)
+    await admin.from("profiles").upsert(
+      {
+        id: user.id,
+        email: user.email!,
+        full_name: user.user_metadata?.full_name as string ?? user.email!.split("@")[0],
+        avatar_url: user.user_metadata?.avatar_url as string ?? null,
+      },
+      { onConflict: "id", ignoreDuplicates: true }
+    );
     const bytes = await file.arrayBuffer();
     const { error: storageError } = await admin.storage
       .from("files")

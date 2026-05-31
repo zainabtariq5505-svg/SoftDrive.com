@@ -53,6 +53,7 @@ export function Sidebar({ collapsed, onToggle, profile, user }: SidebarProps) {
   const storageUsed = profile?.storage_used ?? 0;
   const storageLimit = profile?.storage_limit ?? 32212254720; // 30 GB
   const storagePercent = Math.min((storageUsed / storageLimit) * 100, 100);
+  const isAdmin = profile?.role === "admin";
 
   const initials = profile?.full_name
     ?.split(" ")
@@ -152,31 +153,33 @@ export function Sidebar({ collapsed, onToggle, profile, user }: SidebarProps) {
             );
           })}
 
-          <Link
-            href="/dashboard/admin"
-            className={cn(
-              "sidebar-item",
-              pathname.startsWith("/dashboard/admin")
-                ? "bg-primary/10 text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent",
-              collapsed && "justify-center px-2"
-            )}
-            title={collapsed ? "Admin" : undefined}
-          >
-            <Shield className={cn("w-5 h-5 shrink-0", pathname.startsWith("/dashboard/admin") && "text-primary")} />
-            <AnimatePresence>
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  Admin
-                </motion.span>
+          {isAdmin && (
+            <Link
+              href="/dashboard/admin"
+              className={cn(
+                "sidebar-item",
+                pathname.startsWith("/dashboard/admin")
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                collapsed && "justify-center px-2"
               )}
-            </AnimatePresence>
-          </Link>
+              title={collapsed ? "Admin" : undefined}
+            >
+              <Shield className={cn("w-5 h-5 shrink-0", pathname.startsWith("/dashboard/admin") && "text-primary")} />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="overflow-hidden whitespace-nowrap"
+                  >
+                    Admin
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          )}
         </nav>
 
         {/* Storage Usage */}
