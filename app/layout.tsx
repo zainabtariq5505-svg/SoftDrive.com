@@ -5,24 +5,24 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Soft Drive — Secure Cloud Storage",
-    template: "%s | Soft Drive",
+    default: "SoftDrive — Secure Cloud Storage",
+    template: "%s | SoftDrive",
   },
   description:
     "Professional cloud storage for modern businesses. Secure, fast, and enterprise-grade file management.",
   keywords: ["cloud storage", "file management", "secure storage", "business"],
-  authors: [{ name: "Soft Drive" }],
+  authors: [{ name: "SoftDrive" }],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://softdrive.app",
-    siteName: "Soft Drive",
-    title: "Soft Drive — Secure Cloud Storage",
+    siteName: "SoftDrive",
+    title: "SoftDrive — Secure Cloud Storage",
     description: "Professional cloud storage for modern businesses.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Soft Drive — Secure Cloud Storage",
+    title: "SoftDrive — Secure Cloud Storage",
     description: "Professional cloud storage for modern businesses.",
   },
 };

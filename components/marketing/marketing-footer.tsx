@@ -78,7 +78,7 @@ export function MarketingFooter() {
 
         <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Soft Drive. All rights reserved.
+            © {new Date().getFullYear()} SoftDrive. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
             Secure. Fast. Professional Cloud Storage.

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Sign In",
-  description: "Sign in to your Soft Drive account",
+  description: "Sign in to your SoftDrive account",
 };
 
 export default function LoginPage() {
