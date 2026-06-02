@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileIcon } from "./file-icon";
 import { createClient } from "@/lib/supabase/client";
+import { getPublicAppUrl } from "@/lib/app-url";
 import { formatDate } from "@/types";
 
 interface SharedLink {
@@ -26,7 +27,8 @@ interface SharedLink {
 
 export function SharedFilesView({ sharedLinks }: { sharedLinks: SharedLink[] }) {
   const copyLink = async (token: string) => {
-    const link = `${window.location.origin}/share/${token}`;
+    const baseUrl = getPublicAppUrl(window.location.origin);
+    const link = `${baseUrl}/share/${token}`;
     await navigator.clipboard.writeText(link);
     toast.success("Link copied!");
   };

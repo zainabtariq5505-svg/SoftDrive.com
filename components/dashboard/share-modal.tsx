@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { getPublicAppUrl } from "@/lib/app-url";
 import type { FileRow } from "@/types";
 import type { FilePermission } from "@/types";
 
@@ -54,7 +55,8 @@ export function ShareModal({ file, onClose }: ShareModalProps) {
 
       if (error) throw error;
 
-      const link = `${window.location.origin}/share/${token}`;
+      const baseUrl = getPublicAppUrl(window.location.origin);
+      const link = `${baseUrl}/share/${token}`;
       setShareLink(link);
     } catch (error) {
       toast.error("Failed to generate link");
