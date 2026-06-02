@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { Cloud, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Logo } from "@/components/brand/logo";
 
 const navLinks = [
   { href: "/features", label: "Features" },
@@ -38,12 +39,14 @@ export function MarketingNav() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-glow">
-              <Cloud className="w-4.5 h-4.5 text-white" />
-            </div>
-            <span>Soft Drive</span>
-          </Link>
+          <Logo
+            href="/"
+            className="flex items-center"
+            width={155}
+            height={44}
+            imageClassName="h-8 w-auto"
+            priority
+          />
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">

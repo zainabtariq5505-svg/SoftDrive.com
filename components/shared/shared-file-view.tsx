@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Cloud, Download, Eye, Clock, AlertTriangle, Lock } from "lucide-react";
+import { Download, Eye, Clock, AlertTriangle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { FileIcon } from "@/components/dashboard/file-icon";
 import { formatFileSize, formatDate } from "@/types";
+import { Logo } from "@/components/brand/logo";
 
 interface SharedFileViewProps {
   sharedLink: {
@@ -63,12 +64,7 @@ export function SharedFileView({ sharedLink, isExpired }: SharedFileViewProps) {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
       <header className="border-b border-border/50 px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg w-fit">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-            <Cloud className="w-4 h-4 text-white" />
-          </div>
-          Soft Drive
-        </Link>
+        <Logo href="/" className="flex items-center w-fit" width={145} height={40} imageClassName="h-8 w-auto" />
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">

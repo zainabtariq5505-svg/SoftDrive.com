@@ -4,11 +4,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Cloud, Mail, Lock, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/brand/logo";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -57,12 +58,7 @@ export function LoginForm() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-10"
           >
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-xl">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-glow">
-                <Cloud className="w-5 h-5 text-white" />
-              </div>
-              Soft Drive
-            </Link>
+            <Logo href="/" className="flex items-center" width={180} height={50} imageClassName="h-10 w-auto" priority />
           </motion.div>
 
           <motion.div

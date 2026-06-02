@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import {
-  Cloud,
   HardDrive,
   Share2,
   Clock,
@@ -29,6 +28,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types";
 import { formatFileSize } from "@/types";
 import { useUpload } from "@/components/providers/upload-provider";
+import { Logo } from "@/components/brand/logo";
 
 const navItems = [
   { href: "/dashboard", icon: HardDrive, label: "My Drive" },
@@ -84,23 +84,43 @@ export function Sidebar({ collapsed, onToggle, profile, user, isAdmin = false }:
 
       <div className="flex flex-col h-full px-3 py-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 mb-6 px-1 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-glow shrink-0">
-            <Cloud className="w-4 h-4 text-white" />
-          </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span
+        <div className="mb-6 px-1 min-w-0">
+          <AnimatePresence mode="wait">
+            {collapsed ? (
+              <motion.div
+                key="collapsed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center justify-center"
+              >
+                <Logo
+                  href="/"
+                  className="flex items-center justify-center"
+                  width={42}
+                  height={42}
+                  imageClassName="h-8 w-8 object-cover object-left rounded-xl"
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="expanded"
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
-                className="font-bold text-base overflow-hidden whitespace-nowrap"
+                className="overflow-hidden"
               >
-                Soft Drive
-              </motion.span>
+                <Logo
+                  href="/"
+                  className="flex items-center"
+                  width={155}
+                  height={44}
+                  imageClassName="h-8 w-auto"
+                />
+              </motion.div>
             )}
           </AnimatePresence>
-        </Link>
+        </div>
 
         {/* Upload Button */}
         <Button

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Cloud } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 
 function XIcon({ className }: { className?: string }) {
   return (
@@ -33,12 +33,13 @@ export function MarketingFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-lg mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                <Cloud className="w-4 h-4 text-white" />
-              </div>
-              Soft Drive
-            </Link>
+            <Logo
+              href="/"
+              className="flex items-center mb-4"
+              width={160}
+              height={46}
+              imageClassName="h-8 w-auto"
+            />
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               Professional cloud storage built for modern teams. Secure, fast, and beautifully designed.
             </p>
