@@ -20,8 +20,6 @@ export default async function SharedFilePage({
     .single();
 
   if (!sharedLinkRow) notFound();
-  // If someone guesses a token that shouldn't be public, don't show it.
-  if (!sharedLinkRow.is_public) notFound();
 
   const isExpired =
     sharedLinkRow.expires_at && new Date(sharedLinkRow.expires_at) < new Date();
