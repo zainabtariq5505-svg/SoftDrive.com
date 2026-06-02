@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="m_glyph" x1="24" y1="18" x2="154" y2="156" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#66C3FF"/>
+      <stop offset="0.5" stop-color="#2F7BFF"/>
+      <stop offset="1" stop-color="#5B4BFF"/>
+    </linearGradient>
+    <linearGradient id="m_drive" x1="44" y1="80" x2="130" y2="136" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B6E1FF"/>
+      <stop offset="1" stop-color="#7FB3FF"/>
+    </linearGradient>
+    <filter id="m_glow" x="0" y="0" width="180" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <g filter="url(#m_glow)">
+    <rect x="16" y="16" width="146" height="146" rx="40" fill="#0E1A37"/>
+    <path d="M55 111C44.5066 111 36 102.493 36 92C36 82.0838 43.5959 73.9428 53.2864 73.0772C57.2027 58.2641 70.6779 47.3333 86.6667 47.3333C103.765 47.3333 118.059 59.8256 121.135 76.0412C131.694 76.4826 140 85.0613 140 95.6667C140 106.557 131.224 115.333 120.333 115.333H55V111Z" fill="url(#m_glyph)"/>
+    <path d="M58 102.5C58 96.701 62.701 92 68.5 92H111.5C117.299 92 122 96.701 122 102.5V108.5C122 114.299 117.299 119 111.5 119H68.5C62.701 119 58 114.299 58 108.5V102.5Z" fill="url(#m_drive)"/>
+    <circle cx="73" cy="105.5" r="3.2" fill="#F5FAFF"/>
+    <circle cx="83" cy="105.5" r="3.2" fill="#F5FAFF"/>
+    <path d="M95 105.5H108.5" stroke="#F5FAFF" stroke-width="4.2" stroke-linecap="round"/>
+  </g>
+</svg>

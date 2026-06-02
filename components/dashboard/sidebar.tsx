@@ -99,7 +99,8 @@ export function Sidebar({ collapsed, onToggle, profile, user, isAdmin = false }:
                   className="flex items-center justify-center"
                   width={42}
                   height={42}
-                  imageClassName="h-8 w-8 object-cover object-left rounded-xl"
+                  variant="mark"
+                  imageClassName="h-8 w-8 rounded-xl"
                 />
               </motion.div>
             ) : (
