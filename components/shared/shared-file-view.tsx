@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { FileIcon } from "@/components/dashboard/file-icon";
-import { createClient } from "@/lib/supabase/client";
 import { formatFileSize, formatDate } from "@/types";
 
 interface SharedFileViewProps {
@@ -52,14 +51,9 @@ export function SharedFileView({ sharedLink, isExpired }: SharedFileViewProps) {
     if (!file) return;
     setDownloading(true);
     try {
-      const supabase = createClient();
-      const { data } = await supabase.storage.from("files").createSignedUrl(file.storage_path, 60);
-      if (data?.signedUrl) {
-        const a = document.createElement("a");
-        a.href = data.signedUrl;
-        a.download = file.name;
-        a.click();
-      }
+      window.open(`/api/share/${sharedLink.token}/download`, "_blank", "noopener,noreferrer");
+    } catch {
+      toast.error("Failed to start download");
     } finally {
       setDownloading(false);
     }
